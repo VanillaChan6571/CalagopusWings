@@ -32,6 +32,7 @@ branch stays aligned with upstream.
 ./comparison/source-report.sh
 ./comparison/run-unit-suites.sh
 ./comparison/run-calagopus-container.sh
+python3 -m unittest discover -s comparison/tests -v
 ```
 
 `source-report.sh` records revisions, repository size, test markers, and source
@@ -45,6 +46,36 @@ It also needs native build tools such as CMake. When those should not be
 installed on the host, `run-calagopus-container.sh` runs the same locked suite
 in a disposable Rust build container. It does not mount the Docker socket,
 Wings configuration, or game-server data.
+
+## Read-only contract probe
+
+`contract_probe.py` compares authentication behavior, status codes, JSON shape,
+and bounded latency samples for the common system and server-list endpoints.
+It never records response values, target URLs, or credentials. Reports are
+created with mode `0600`. Redirects are not followed, preventing a node from
+redirecting an authorization header to another origin. Timings are explicitly
+cold-request timings without persistent connections; workload benchmarks will
+measure steady-state latency separately.
+
+The probe refuses to run without an explicit disposable-node confirmation.
+Tokens are accepted only through environment variables so they do not appear in
+the process list:
+
+```bash
+export CATWINGS_LAB_URL=https://catwings-canary.example.test
+export CATWINGS_LAB_TOKEN='...'
+export CALAGOPUS_LAB_URL=https://calagopus-canary.example.test
+export CALAGOPUS_LAB_TOKEN='...'
+
+./comparison/contract_probe.py \
+  --confirm-disposable these-are-disposable-nodes \
+  --samples 20 \
+  --output comparison/results/read-only.json
+```
+
+Non-loopback HTTP targets are rejected. This suite performs only `GET` requests.
+Stateful file, lifecycle, console, and backup tests will use a separate runner
+with fixture ownership and cleanup enforcement.
 
 ## Fair comparison plan
 

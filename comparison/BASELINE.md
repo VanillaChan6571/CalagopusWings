@@ -1,17 +1,17 @@
 # Baseline comparison
 
-Recorded: 2026-10-30
+Recorded: 2026-11-02
 
 ## Revisions
 
 - CatWings: `7377117b9b476d5a25c58bc22d1d3d71c221029f`
-- Calagopus Wings: `9999c1f94dbd65f81a6457ac938906234a99877b`
+- Calagopus Wings: `28657dbc625ac1f4f69d039805518f4594b6d3a3`
 
 ## Source inventory
 
 | Metric | CatWings | Calagopus Wings |
 | --- | ---: | ---: |
-| Primary-language source lines | 26,014 Go | 124,879 Rust |
+| Primary-language source lines | 26,014 Go | 124,927 Rust |
 | Tracked files | 177 | 348 |
 | Test markers | 87 | 920 |
 
@@ -29,7 +29,7 @@ were changed. Rust 1.99.0 was installed as an explicit side-by-side toolchain,
 and the locked workspace suite was run in the isolated build container provided
 by `comparison/run-calagopus-container.sh`.
 
-Calagopus result:
+Calagopus 1.2.9 result at the pinned revision:
 
 - 879 passed;
 - 8 failed;

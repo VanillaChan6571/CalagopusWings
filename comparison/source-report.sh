@@ -26,6 +26,17 @@ revision() {
     git -C "$1" log -1 --format='%H | %cI | %s'
 }
 
+calagopus_engine_revision() {
+    git -C "$calagopus_root" log -1 --format='%H | %cI | %s' -- \
+        application pbs-client Cargo.toml Cargo.lock
+}
+
+tracked_engine_files() {
+    local root="$1"
+
+    git -C "$root" ls-files -- . ':(exclude)comparison/**' | wc -l
+}
+
 source_lines() {
     local root="$1"
     local pattern="$2"
@@ -56,18 +67,18 @@ signal_count() {
 }
 
 printf 'CatWings revision:   %s\n' "$(revision "$catwings_root")"
-printf 'Calagopus revision:  %s\n' "$(revision "$calagopus_root")"
+printf 'Calagopus revision:  %s\n' "$(calagopus_engine_revision)"
 printf '\n'
 printf '%-12s %12s %14s %14s\n' Engine Source-lines Tracked-files Test-markers
 printf '%-12s %12s %14s %14s\n' \
     CatWings \
     "$(source_lines "$catwings_root" '*.go')" \
-    "$(git -C "$catwings_root" ls-files | wc -l)" \
+    "$(tracked_engine_files "$catwings_root")" \
     "$(test_markers "$catwings_root" go)"
 printf '%-12s %12s %14s %14s\n' \
     Calagopus \
     "$(source_lines "$calagopus_root" '*.rs')" \
-    "$(git -C "$calagopus_root" ls-files | wc -l)" \
+    "$(tracked_engine_files "$calagopus_root")" \
     "$(test_markers "$calagopus_root" rust)"
 
 printf '\nSource files containing feature signals (presence only):\n'
